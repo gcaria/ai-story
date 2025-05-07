@@ -1,20 +1,36 @@
 import FormEntry from "./FormEntry.js";
 
 function Form({
-  character1,
-  character2,
+  userPrompt,
   writer,
   loading,
-  setCharacter1,
-  setCharacter2,
+  setUserPrompt,
   setWriter,
-  setQuery,
+  setReply,
+  setLoading,
 }) {
-  const handleSubmit = (e) => {
+  const apiUrl = process.env.REACT_APP_API_BASE_URL;
+  const handleSubmit = async (e) => {
     e.preventDefault(); // prevent page reload
 
-    const query = `Write a short story about ${character1} and ${character2}, as if it was written by ${writer}.`;
-    setQuery(query);
+    const query = `Write a short story about ${userPrompt}, as if it was written by ${writer}.`;
+
+    setLoading(true);
+    try {
+      const res = await fetch(`${apiUrl}/query`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query }),
+      });
+
+      const data = await res.json();
+      // const message = data.choices?.[0]?.message?.content || "[No response]";
+      setReply(data.answer);
+    } catch (error) {
+      setReply("Error: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -23,21 +39,12 @@ function Form({
       <form onSubmit={handleSubmit}>
         <FormEntry
           entry={{
-            label: "Character #1",
+            label: "Story's plot",
             type: "text",
-            name: "character1",
-            value: character1,
+            name: "userPrompt",
+            value: userPrompt,
           }}
-          onChange={setCharacter1}
-        />
-        <FormEntry
-          entry={{
-            label: "Character #2",
-            type: "text",
-            name: "character2",
-            value: character2,
-          }}
-          onChange={setCharacter2}
+          onChange={setUserPrompt}
         />
         <FormEntry
           entry={{
