@@ -1,14 +1,15 @@
 # Backend (FastAPI + FAISS)
+import json
+import os
+
+import faiss
+import numpy as np
+import openai
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
-import faiss
-import numpy as np
-import openai
-import json
-import os
-from dotenv import load_dotenv
 
 load_dotenv()  # optional — for local dev or when .env is mounted
 
@@ -18,7 +19,9 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], #["http://aibook-webapp.s3-website.us-east-2.amazonaws.com"],  # e.g., ["http://localhost:3000"] or your frontend domain
+    allow_origins=[
+        "*"
+    ],  # ["http://aibook-webapp.s3-website.us-east-2.amazonaws.com"],  # e.g., ["http://localhost:3000"] or your frontend domain
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,12 +33,15 @@ index = faiss.read_index("book_index.faiss")
 with open("book_chunks.json", "r", encoding="utf-8") as f:
     chunks = json.load(f)
 
+
 class QueryRequest(BaseModel):
     query: str
+
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
 
 @app.post("/query")
 async def query_book(req: QueryRequest):
@@ -47,11 +53,10 @@ async def query_book(req: QueryRequest):
     context = "\n".join([chunks[i] for i in I[0]])
 
     # Call OpenAI API
-    prompt = f"""
-    Question: {req.query}
+    prompt = f"""{req.query}
 
     This is some sample text to guide you learning the style of this author:
-    {context}
+    "{context}"
     """
 
     print(prompt)
