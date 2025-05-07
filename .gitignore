@@ -1,0 +1,43 @@
+# === Global ===
+.DS_Store
+*.log
+*.pyc
+*.pyo
+*.swp
+__pycache__/
+.env
+.env.*  # Catch env-specific configs like .env.dev or .env.local
+*.sqlite3
+
+# === Python backend ===
+backend/__pycache__/
+backend/*.py[cod]
+backend/.env
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.coverage
+backend/venv/
+backend/instance/
+backend/.vscode/
+
+# === Frontend (React) ===
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.env*
+frontend/.parcel-cache/
+frontend/.vite/
+frontend/yarn.lock
+frontend/package-lock.json
+
+# === Docker ===
+*.pid
+docker-compose.override.yml
+
+# === Editor/IDE ===
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
