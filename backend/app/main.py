@@ -8,6 +8,7 @@ import openai
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
 
@@ -19,9 +20,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "*"
-    ],  # ["http://aibook-webapp.s3-website.us-east-2.amazonaws.com"],  # e.g., ["http://localhost:3000"] or your frontend domain
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,6 +40,11 @@ class QueryRequest(BaseModel):
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+
+@app.get("/health")
+def health_check():
+    return JSONResponse(status_code=200, content={"status": "ok"})
 
 
 @app.post("/query")
